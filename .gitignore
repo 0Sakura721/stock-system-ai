@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 数据（900万行，3.4GB，不入库）
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+data/*.db
+
+# 输出图表（可再生）
+output/*.png
+
+# 临时
+logs.txt
+*.log
+.DS_Store
+output/*.csv
+output/stats.json
