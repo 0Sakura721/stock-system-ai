@@ -256,20 +256,20 @@ def _notes(plan: dict) -> list[str]:
     out = []
     t, cur = plan["target_position"], plan["current_position"]
     if t >= 0.99:
-        out.append("择时信号：满仓。指数在MA60上方且短期均线上穿，持股为主。")
-    elif t >= 0.49:
-        out.append("择时信号：半仓。指数在MA120上方但中期均线未完全多头。")
-    elif t >= 0.29:
-        out.append("择时信号：三成仓。指数跌破MA60但仍在MA120上方，控制风险。")
+        out.append("择时信号：满仓。指数在MA45上方且MA15上穿MA45，趋势确认。")
+    elif t >= 0.55:
+        out.append("择时信号：六成仓。指数在MA45上方，但短期均线回调。")
+    elif t >= 0.25:
+        out.append("择时信号：三成仓。指数跌破MA45但仍在MA150上方，控制风险。")
     else:
-        out.append("择时信号：空仓。指数跌破MA120，等待右侧信号再入场。")
+        out.append("择时信号：空仓。指数跌破MA150，深度弱势，等待右侧信号。")
     if abs(t - cur) > 0.15:
         out.append(f"当前仓位 {cur:.0%} 与目标 {t:.0%} 偏离较大，需要调整。")
     blocked = [s for s in plan["sells"] if s.get("blocked")]
     if blocked:
         out.append(f"有 {len(blocked)} 只卖单因跌停/停牌无法成交，次日重试。")
     out.append("买入挂限价：参考价×1.005~1.01，未成交当日撤单，不追高。")
-    out.append("单票止损与回撤止损为硬约束，触发即执行，不等反弹。")
+    out.append("个股止损设置极宽（-20%），仅防黑天鹅；日常保护来自仓位控制。")
     return out
 
 
