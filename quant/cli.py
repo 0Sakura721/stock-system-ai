@@ -178,6 +178,38 @@ def cmd_signal(a):
     return 0
 
 
+def cmd_auto(a):
+    from . import autopilot as AP
+    from . import autopilot_etf as AE
+    mode = AE.auto_mode(a.cash) if not a.mode else a.mode
+    print(f"本金 {a.cash:,.0f} -> 模式 {mode}")
+    if mode == "etf":
+        ap = AE.EtfAutopilot(code=a.etf, cash=a.cash, verbose=True)
+        try:
+            r = ap.run_once()
+        finally:
+            ap.close()
+        print()
+        print(f"信号日 {r['signal']}  目标仓位 {r['target']:.0%}  成交 {r['filled']} 笔")
+        print(f"权益 {r['equity']:,.2f}   日报 {r['report']}")
+    else:
+        r = AP.run(cash=a.cash, full_fetch=a.full)
+        print()
+        print(f"信号日 {r['signal']}  目标仓位 {r['target']:.0%}  "
+              f"订单 {r['orders']}  成交 {r['filled']}  告警 {r['alerts']}")
+        print(f"权益 {r['equity']:,.2f}   日报 {r['report']}")
+    return 0
+
+
+def cmd_replay(a):
+    """补跑历史区间，用模拟撮合逐日执行，验证 autopilot 逻辑。"""
+    from . import autopilot as AP
+    ap = AP.Autopilot(cash=a.cash, verbose=a.verbose)
+    r = ap.replay(start=a.start, end=a.end)
+    ap.close()
+    return 0
+
+
 def cmd_report(a):
     from . import report as R
     print(R.build_report())
@@ -237,6 +269,18 @@ def main(argv=None):
 
     p = sub.add_parser("signal")
     p.set_defaults(fn=cmd_signal)
+
+    p = sub.add_parser("auto")
+    p.add_argument("--full", action="store_true")
+    p.add_argument("--mode", default=None, choices=["etf", "stock"])
+    p.add_argument("--etf", default="159949")
+    p.set_defaults(fn=cmd_auto)
+
+    p = sub.add_parser("replay")
+    p.add_argument("--start", default="2020-01-01")
+    p.add_argument("--end", default=None)
+    p.add_argument("--verbose", action="store_true")
+    p.set_defaults(fn=cmd_replay)
 
     p = sub.add_parser("report")
     p.set_defaults(fn=cmd_report)

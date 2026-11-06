@@ -19,3 +19,6 @@ logs.txt
 .DS_Store
 output/*.csv
 output/stats.json
+logs_*.txt
+run_auto.bat
+output/autopilot/*.json
